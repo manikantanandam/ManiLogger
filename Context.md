@@ -14,7 +14,7 @@ Guidance for working in this repository. Keep it current as the package evolves.
 `ManiLogger` gives an app one logging call that does three things:
 - writes to the Xcode console through `os.Logger` (subsystem = bundle id, category = `LogCategory`);
 - fans out to pluggable `LogSink`s (in-memory ring buffer, rotating file, or anything the app adds, such as a crash-reporter forwarder);
-- ships a ready-made log viewer: a searchable list with a filter dropdown (level / time range / category) and a detail screen for each entry.
+- ships a ready-made log viewer: a searchable list with level segments, time-range chips and a category filter dropdown, plus a detail screen for each entry.
 
 It depends on `ManiSwiftUIComponents` for theming and controls (`ManiSearchField`, `IconView`, `ManiListRow`).
 
@@ -27,7 +27,7 @@ It depends on `ManiSwiftUIComponents` for theming and controls (`ManiSearchField
   - `FileLogSink.swift`: `Application Support/Logs/current.log` + `previous.log`, rotated at 1 MB and written on a serial queue.
 - `Sources/ManiLogger/UI/`
   - `LogViewerViewModel.swift`: filters, counts, summary, clear and share text; `now` is injectable for tests.
-  - `LogViewerView.swift`: list with rows capped at 5 lines, a pinned search field and a filter `Menu`.
+  - `LogViewerView.swift`: list with rows capped at 5 lines, and a pinned header: search field + category filter `Menu`, level segments, time-range chips, and the "N of M" count.
   - `LogDetailView.swift`: full entry, selectable text, share; also `LogEntryStyle` (level colours, search highlighting).
 - `Tests/ManiLoggerTests/`: Swift Testing suites for the core and the view model.
 
@@ -55,7 +55,7 @@ LogViewerView(viewModel: LogViewerViewModel(logBuffer: buffer, fileLogSink: file
 - Never log PII (names, phone numbers, emails, amounts). Log ids and counts.
 - Keep `Core/` free of SwiftUI and third-party dependencies, so it could later be split into its own product.
 - The UI must stay plain, Skip-portable SwiftUI, following ManiSwiftUIComponents' rules: no UIKit, no `.onTapGesture`, icons only through `IconView`.
-- Never put multiple buttons in a single `List` row. SwiftUI fires all of them on one tap, which is why the filters live in a `Menu`.
+- Never put multiple buttons in a single `List` row. SwiftUI fires all of them on one tap, which is why the chips sit in the pinned header (`safeAreaInset`), outside the List.
 - Use Swift Testing (`import Testing`).
 
 ## Release

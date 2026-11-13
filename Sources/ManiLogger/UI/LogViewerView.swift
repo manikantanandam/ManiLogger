@@ -54,12 +54,26 @@ public struct LogViewerView: View {
         }
     }
 
-    /// Search field with the filter dropdown beside it, plus the result count. Pinned above the list.
+    /// Search + category dropdown, level segments, time chips and the result count.
+    /// Pinned above the list (not inside a List row, where SwiftUI would fire every chip on one tap).
     private var header: some View {
-        VStack(alignment: .leading, spacing: ManiSpacing.xs) {
+        VStack(alignment: .leading, spacing: ManiSpacing.sm) {
             HStack(spacing: ManiSpacing.sm) {
                 ManiSearchField(text: $viewModel.logSearchText, placeholder: "Search logs")
                 filterMenu
+            }
+            Picker("Minimum level", selection: $viewModel.logLevelFilter) {
+                ForEach(LogLevel.allCases, id: \.self) { level in
+                    Text(level.label).tag(level)
+                }
+            }
+            .pickerStyle(.segmented)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: ManiSpacing.sm) {
+                    ForEach(LogTimeRange.allCases, id: \.self) { range in
+                        ManiChip(range.title, isSelected: viewModel.logTimeRange == range) { viewModel.logTimeRange = range }
+                    }
+                }
             }
             HStack {
                 Text(viewModel.logResultSummary)
@@ -79,20 +93,6 @@ public struct LogViewerView: View {
 
     private var filterMenu: some View {
         Menu {
-            Picker("Minimum level", selection: $viewModel.logLevelFilter) {
-                ForEach(LogLevel.allCases, id: \.self) { level in
-                    Text(level.label).tag(level)
-                }
-            }
-            .pickerStyle(.inline)
-
-            Picker("Time range", selection: $viewModel.logTimeRange) {
-                ForEach(LogTimeRange.allCases, id: \.self) { range in
-                    Text(range.title).tag(range)
-                }
-            }
-            .pickerStyle(.inline)
-
             Section("Categories") {
                 Toggle("All categories", isOn: Binding(
                     get: { viewModel.selectedLogCategories.isEmpty },
