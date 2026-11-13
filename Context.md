@@ -60,7 +60,7 @@ LogViewerView(viewModel: LogViewerViewModel(logBuffer: buffer, fileLogSink: file
 
 ## Release
 
-Tag `vX.Y.Z` on `main` and push the tag. Consumers pin an exact version. In apoorva-skip, bump `remoteVersion` in `scripts/library-registry.json`, then run `scripts/toggle-library.sh remote ManiLogger`.
+`main` is protected: changes need a PR (0 approvals required), the rules apply to admins too, and force-pushes and deletion are blocked. Land changes through a PR, then tag `vX.Y.Z` on `main` and push the tag. Consumers pin an exact version. In apoorva-skip, bump `remoteVersion` in `scripts/library-registry.json`, then run `scripts/toggle-library.sh remote ManiLogger`.
 
 ## Commands
 
