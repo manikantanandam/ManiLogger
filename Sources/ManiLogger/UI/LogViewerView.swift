@@ -18,6 +18,9 @@ public struct LogViewerView: View {
 
     public var body: some View {
         List {
+            #if os(Android)
+            header  // SkipSwiftUI has no safeAreaInset; render the header as the first row instead.
+            #endif
             if viewModel.filteredLogEntries.isEmpty {
                 Text("No logs")
                     .foregroundStyle(theme.base.textSecondary)
@@ -40,7 +43,9 @@ public struct LogViewerView: View {
                 }
             }
         }
+        #if !os(Android)
         .safeAreaInset(edge: .top) { header }
+        #endif
         .refreshable { viewModel.reloadLogs() }
         .onAppear { viewModel.reloadLogs() }
         .navigationTitle("Logs")
