@@ -69,7 +69,8 @@ public enum LogEntryStyle {
         while searchStart < attributed.endIndex,
               let range = attributed[searchStart...].range(of: query, options: .caseInsensitive) {
             attributed[range].font = .caption.monospaced().bold()
-            #if !os(Android)  // AttributedString background colour isn't available in SkipSwiftUI.
+            attributed[range].foregroundColor = accent
+            #if !os(Android)  // AttributedString background colour isn't available in SkipSwiftUI; the accent text colour carries it there.
             attributed[range].backgroundColor = accent.opacity(0.25)
             #endif
             searchStart = range.upperBound

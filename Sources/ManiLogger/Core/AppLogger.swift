@@ -6,6 +6,8 @@
 import Foundation
 #if canImport(os)
 import os
+#elseif os(Android)
+import AndroidLogging  // `Logger` that writes to logcat
 #endif
 
 /// Process-wide sink registry. Logging is cross-cutting (like `os.Logger`), so call sites use a
@@ -49,11 +51,11 @@ public final class LogSinks: @unchecked Sendable {
     }
 }
 
-/// Logs to the Xcode console via `os.Logger` (Apple platforms only) and fans out to the registered `LogSinks`.
+/// Logs to the Xcode console via `os.Logger` (logcat on Android) and fans out to the registered `LogSinks`.
 /// Callers must not log PII (names, phone numbers, emails, amounts) — log ids/counts.
 public struct AppLogger: Sendable {
     public let category: LogCategory
-    #if canImport(os)
+    #if canImport(os) || os(Android)
     private let osLogger: Logger
     #endif
     private let registry: LogSinks
@@ -63,7 +65,7 @@ public struct AppLogger: Sendable {
                 registry: LogSinks = .shared) {
         self.category = category
         self.registry = registry
-        #if canImport(os)
+        #if canImport(os) || os(Android)
         self.osLogger = Logger(subsystem: subsystem, category: category.rawValue)
         #endif
     }
@@ -81,6 +83,14 @@ public struct AppLogger: Sendable {
         case .info: osLogger.info("\(message, privacy: .public)")
         case .warning: osLogger.warning("\(message, privacy: .public)")
         case .error: osLogger.error("\(message, privacy: .public)")
+        }
+        #elseif os(Android)
+        // AndroidLogging's `OSLogMessage` is a plain String and has no `privacy:` interpolation.
+        switch level {
+        case .debug: osLogger.debug(message)
+        case .info: osLogger.info(message)
+        case .warning: osLogger.warning(message)
+        case .error: osLogger.error(message)
         }
         #endif
         registry.dispatch(LogEntry(level: level, category: category, message: message, sessionId: registry.sessionId))

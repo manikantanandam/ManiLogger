@@ -55,7 +55,8 @@ LogViewerView(viewModel: LogViewerViewModel(logBuffer: buffer, fileLogSink: file
 - Never log PII (names, phone numbers, emails, amounts). Log ids and counts.
 - Keep `Core/` free of SwiftUI and third-party dependencies, so it could later be split into its own product.
 - The UI must stay plain, Skip-portable SwiftUI, following ManiSwiftUIComponents' rules: no UIKit, no `.onTapGesture`, icons only through `IconView`.
-- Never put multiple buttons in a single `List` row. SwiftUI fires all of them on one tap, which is why the chips sit in the pinned header (`safeAreaInset`), outside the List.
+- Never put multiple buttons in a single `List` row. SwiftUI fires all of them on one tap, which is why the chips sit in a header above the List in a `VStack` (not `safeAreaInset`, which SkipSwiftUI lacks).
+- Android: `AppLogger` writes to logcat through `AndroidLogging` (`swift-android-native`); `textSelection` is unavailable in SkipSwiftUI, so the share sheet's Copy is the way to copy a log; search matches are bold and accent-coloured (the background tint is Apple-only).
 - Use Swift Testing (`import Testing`).
 
 ## Release
