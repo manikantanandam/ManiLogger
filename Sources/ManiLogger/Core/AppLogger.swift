@@ -77,20 +77,29 @@ public struct AppLogger: Sendable {
 
     public func log(_ level: LogLevel, _ message: String) {
         guard level >= registry.minimumLevel else { return }
+        // Console-only prefix so the level is visible in Xcode's console; sinks and the viewer get the raw message.
+        let tag: String
+        switch level {
+        case .debug: tag = "[DEBUG]"
+        case .info: tag = "[INFO]"
+        case .warning: tag = "[WARNING]"
+        case .error: tag = "[ERROR]"
+        }
+        let consoleMessage = "\(tag) \(message)"
         #if canImport(os)
         switch level {
-        case .debug: osLogger.debug("\(message, privacy: .public)")
-        case .info: osLogger.info("\(message, privacy: .public)")
-        case .warning: osLogger.warning("\(message, privacy: .public)")
-        case .error: osLogger.error("\(message, privacy: .public)")
+        case .debug: osLogger.debug("\(consoleMessage, privacy: .public)")
+        case .info: osLogger.info("\(consoleMessage, privacy: .public)")
+        case .warning: osLogger.warning("\(consoleMessage, privacy: .public)")
+        case .error: osLogger.error("\(consoleMessage, privacy: .public)")
         }
         #elseif os(Android)
         // AndroidLogging's `OSLogMessage` is a plain String and has no `privacy:` interpolation.
         switch level {
-        case .debug: osLogger.debug(message)
-        case .info: osLogger.info(message)
-        case .warning: osLogger.warning(message)
-        case .error: osLogger.error(message)
+        case .debug: osLogger.debug(consoleMessage)
+        case .info: osLogger.info(consoleMessage)
+        case .warning: osLogger.warning(consoleMessage)
+        case .error: osLogger.error(consoleMessage)
         }
         #endif
         registry.dispatch(LogEntry(level: level, category: category, message: message, sessionId: registry.sessionId))
