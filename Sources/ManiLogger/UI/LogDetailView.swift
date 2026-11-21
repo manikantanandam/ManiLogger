@@ -35,7 +35,9 @@ public struct LogDetailView: View {
                 Text(LogEntryStyle.highlighted(entry.message, query: searchQuery, accent: theme.accent.accent))
                     .font(.caption.monospaced())
                     .foregroundStyle(theme.base.text)
+                    #if !os(Android)
                     .textSelection(.enabled)
+                    #endif
             }
         }
         .navigationTitle("Log detail")
@@ -67,7 +69,10 @@ public enum LogEntryStyle {
         while searchStart < attributed.endIndex,
               let range = attributed[searchStart...].range(of: query, options: .caseInsensitive) {
             attributed[range].font = .caption.monospaced().bold()
+            attributed[range].foregroundColor = accent
+            #if !os(Android)  // AttributedString background colour isn't available in SkipSwiftUI; the accent text colour carries it there.
             attributed[range].backgroundColor = accent.opacity(0.25)
+            #endif
             searchStart = range.upperBound
         }
         return attributed

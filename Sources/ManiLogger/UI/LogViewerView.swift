@@ -17,6 +17,24 @@ public struct LogViewerView: View {
     }
 
     public var body: some View {
+        // Header above the list in a VStack (SkipSwiftUI has no safeAreaInset), so it stays pinned on both platforms.
+        VStack(spacing: 0) {
+            header
+            list
+        }
+        .onAppear { viewModel.reloadLogs() }
+        .navigationTitle("Logs")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                ShareLink(item: viewModel.logText)
+            }
+            ToolbarItem(placement: .secondaryAction) {
+                Button("Clear") { viewModel.clearLogs() }
+            }
+        }
+    }
+
+    private var list: some View {
         List {
             if viewModel.filteredLogEntries.isEmpty {
                 Text("No logs")
@@ -40,18 +58,7 @@ public struct LogViewerView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .top) { header }
         .refreshable { viewModel.reloadLogs() }
-        .onAppear { viewModel.reloadLogs() }
-        .navigationTitle("Logs")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                ShareLink(item: viewModel.logText)
-            }
-            ToolbarItem(placement: .secondaryAction) {
-                Button("Clear") { viewModel.clearLogs() }
-            }
-        }
     }
 
     /// Search + category dropdown, level segments, time chips and the result count.
