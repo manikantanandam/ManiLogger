@@ -60,13 +60,16 @@ public struct AppLogger: Sendable {
     #endif
     private let registry: LogSinks
 
+    /// `subsystem` nil means the bundle identifier. It isn't a `Bundle.main` default argument because Skip
+    /// can't bridge `Bundle.main` there on Android.
     public init(category: LogCategory,
-                subsystem: String = Bundle.main.bundleIdentifier ?? "ManiLogger",
+                subsystem: String? = nil,
                 registry: LogSinks = .shared) {
         self.category = category
         self.registry = registry
         #if canImport(os) || os(Android)
-        self.osLogger = Logger(subsystem: subsystem, category: category.rawValue)
+        self.osLogger = Logger(subsystem: subsystem ?? Bundle.main.bundleIdentifier ?? "ManiLogger",
+                               category: category.rawValue)
         #endif
     }
 

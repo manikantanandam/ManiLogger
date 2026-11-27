@@ -5,6 +5,7 @@
 
 import Foundation
 import Observation
+import SkipFuse
 
 /// How far back the log viewer looks.
 public enum LogTimeRange: CaseIterable, Sendable {
