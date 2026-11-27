@@ -16,6 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/manikantanandam/ManiSwiftUIComponents.git", branch: "feature/android-support"),  // TEMPORARY: restore `from: "1.2.0"` after release
+        .package(url: "https://github.com/skiptools/skip.git", from: "1.9.13"),
         .package(url: "https://github.com/skiptools/skip-fuse-ui.git", from: "1.0.0"),
         .package(url: "https://github.com/skiptools/swift-android-native.git", from: "1.5.1"),
     ],
@@ -24,11 +25,15 @@ let package = Package(
             name: "ManiLogger",
             dependencies: [
                 .product(name: "ManiSwiftUIComponents", package: "ManiSwiftUIComponents"),
-                // Supplies the `SwiftUI` module on Android (see skip-fuse-ui's `SwiftUI` shim target).
-                .product(name: "SkipFuseUI", package: "skip-fuse-ui", condition: .when(platforms: [.android])),
+                // Unconditional: skipstone resolves the Kotlin side's dependencies on the host, so an
+                // Android-only condition leaves the generated bridge code without `skip.bridge`.
+                .product(name: "SkipFuseUI", package: "skip-fuse-ui"),
                 // `Logger` that writes to logcat, so Android gets console output like `os.Logger` on Apple platforms.
                 .product(name: "AndroidLogging", package: "swift-android-native", condition: .when(platforms: [.android]))
-            ]
+            ],
+            // skipstone generates the SkipUIBridging conformance the log viewer's views need to render on
+            // Android (Skip Fuse); without it they render as EmptyView.
+            plugins: [.plugin(name: "skipstone", package: "skip")]
         ),
         .testTarget(
             name: "ManiLoggerTests",

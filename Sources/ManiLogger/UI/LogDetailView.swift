@@ -8,7 +8,7 @@ import ManiSwiftUIComponents
 
 /// Full view of one log entry, opened from a (line-capped) row in `LogViewerView`.
 public struct LogDetailView: View {
-    @Environment(\.maniTheme) private var theme
+    @Environment(\.maniTheme) var theme
     let entry: LogEntry
     let searchQuery: String
 

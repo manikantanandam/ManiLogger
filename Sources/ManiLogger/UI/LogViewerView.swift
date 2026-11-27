@@ -9,8 +9,8 @@ import ManiSwiftUIComponents
 /// Searchable, filterable list of recent log entries. Push it inside a `NavigationStack`;
 /// tapping a row opens `LogDetailView`.
 public struct LogViewerView: View {
-    @Environment(\.maniTheme) private var theme
-    @State private var viewModel: LogViewerViewModel
+    @Environment(\.maniTheme) var theme
+    @State var viewModel: LogViewerViewModel
 
     public init(viewModel: LogViewerViewModel) {
         _viewModel = State(initialValue: viewModel)
