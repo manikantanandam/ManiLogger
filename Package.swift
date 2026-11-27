@@ -15,7 +15,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/manikantanandam/ManiSwiftUIComponents.git", branch: "feature/android-support"),  // TEMPORARY: restore `from: "1.2.0"` after release
+        .package(url: "https://github.com/manikantanandam/ManiSwiftUIComponents.git", from: "1.3.0"),
         .package(url: "https://github.com/skiptools/skip.git", from: "1.9.13"),
         .package(url: "https://github.com/skiptools/skip-fuse-ui.git", from: "1.0.0"),
         .package(url: "https://github.com/skiptools/swift-android-native.git", from: "1.5.1"),
